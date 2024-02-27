@@ -104,7 +104,6 @@ public class LinearAlgebraFunctions {
 		if (pivPos != -1) {
 			pivotMath(matrix, row, pivPos, col);
 		} else if (secPiv != -1) {
-			scaleRow(matrix, secPiv, col);
 			pivotMath(matrix, row, secPiv, col);
 		} else {
 			foundPivot = false;
@@ -120,6 +119,7 @@ public class LinearAlgebraFunctions {
 	 * @param col
 	 */
 	public static void pivotMath(float[][] matrix, int row, int pivPos, int col) {
+		scaleRow(matrix, pivPos, col);
 		if (pivPos != row) {
 			// swap rows
 			swapRows(matrix, pivPos, row);
@@ -129,9 +129,12 @@ public class LinearAlgebraFunctions {
 		System.out.println("----------------");
 		// perform row math to clear col
 		for (int i = 0; i < matrix.length; i++) {
-			if (i != row) {
+			if (i > row) {
 				scaleRow(matrix, i, col);
-				elimRow(matrix, i, row);
+				elimRow(matrix, i, row, 1);
+			} else if (i < row) {
+				float scale = matrix[i][col];
+				elimRow(matrix, i, row, scale);
 			}
 			printMatrix(matrix);
 			System.out.println("----------------");
@@ -184,10 +187,10 @@ public class LinearAlgebraFunctions {
 	 * @param rowToElim
 	 * @param pivRow
 	 */
-	private static void elimRow(float[][] rref, int rowToElim, int pivRow) {
+	private static void elimRow(float[][] rref, int rowToElim, int pivRow, float scale) {
 		if (rref[rowToElim][pivRow] != 0) {
 			for (int i = 0; i < rref[pivRow].length; i++) {
-				rref[rowToElim][i] -= (rref[pivRow][i]);
+				rref[rowToElim][i] -= (rref[pivRow][i] * scale);
 			}		
 		}
 
@@ -210,11 +213,10 @@ public class LinearAlgebraFunctions {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		float[] vector1 = {1, 1, 1, 1};
-		float[] vector2 = {1, -1, 1, -1};
-		float[] vector3 = {1, 1, -1, -1};
-		float[] vector4 = {1, -1, -1, 1};
-		float[][] matrix = {vector1, vector2, vector3, vector4};
+		float[] vector1 = {2, 2};
+		float[] vector2 = {1, 2};
+		float[] vector3 = {2, -1};
+		float[][] matrix = {vector1, vector2, vector3};
 		System.out.println(isInvertible(matrix));
 		printMatrix(computeRREF(matrix));
 	}
